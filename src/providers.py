@@ -131,8 +131,11 @@ class GeminiProvider(BaseLLMProvider):
                 }
 
         except Exception as e:
-            print(f"⚠️ [Gemini API Warning]: Không thể kết nối live API ({str(e)}). Tự động fallback về Mock.")
-            return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
+            error_msg = f"Không thể kết nối live API Gemini ({str(e)}). Tự động fallback về Mock."
+            print(f"⚠️ [Gemini API Warning]: {error_msg}")
+            fallback = MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
+            fallback["thought"] = f"⚠️ [FALLBACK OFFLINE MOCK] {error_msg} | {fallback.get('thought', '')}"
+            return fallback
 
 
 class OpenAIProvider(BaseLLMProvider):
@@ -207,8 +210,11 @@ class OpenAIProvider(BaseLLMProvider):
                     "thought": "OpenAI phản hồi trực tiếp bằng văn bản (không cần gọi công cụ)."
                 }
         except Exception as e:
-            print(f"⚠️ [OpenAI API Warning]: Không thể kết nối live API ({str(e)}). Tự động fallback về Mock.")
-            return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
+            error_msg = f"Không thể kết nối live API OpenAI ({str(e)}). Tự động fallback về Mock."
+            print(f"⚠️ [OpenAI API Warning]: {error_msg}")
+            fallback = MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
+            fallback["thought"] = f"⚠️ [FALLBACK OFFLINE MOCK] {error_msg} | {fallback.get('thought', '')}"
+            return fallback
 
 
 def get_llm_provider() -> BaseLLMProvider:
